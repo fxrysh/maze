@@ -1,0 +1,14 @@
+{
+  "name": "@fxrysh/maze",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npx wat2wasm index.wat -o index.wasm",
+    "fmt": "npx prettier --check --write .",
+    "serve": "python3 -m 'http.server' -d . 8000"
+  },
+  "devDependencies": {
+    "prettier": "^2.6.1",
+    "wat2wasm": "^3.0.0"
+  }
+}
