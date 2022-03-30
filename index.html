@@ -4,7 +4,10 @@
     <title>Maze</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+        rel="stylesheet"
+    />
     <style>
         html,
         body {
@@ -15,9 +18,10 @@
             height: 100%;
             width: 100%;
             margin: 0;
-            font-family: 'Press Start 2P', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-                'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Fira Sans',
-                'Droid Sans', 'Helvetica Neue', sans-serif;
+            font-family: 'Press Start 2P', -apple-system, BlinkMacSystemFont,
+                'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+                'Open Sans', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
         }
 
         #main {
@@ -114,13 +118,14 @@
                 document.addEventListener('keyup', onkey.bind(null, 0), false);
 
                 function onClick() {
-                    if(document.pointerLockElement) {
+                    if (document.pointerLockElement) {
                         document.exitPointerLock();
-                    }
-                    else {
-                        (canvas.requestPointerLock
-                        || canvas.mozRequestPointerLock
-                        || canvas.webkitRequestPointerLock).call(canvas);
+                    } else {
+                        (
+                            canvas.requestPointerLock ||
+                            canvas.mozRequestPointerLock ||
+                            canvas.webkitRequestPointerLock
+                        ).call(canvas);
                     }
                 }
 
@@ -129,15 +134,19 @@
                 }
 
                 function onPointerLockChange() {
-                    if(document.pointerLockElement === null) {
-                        document.removeEventListener("mousemove", onMouseMove);
-                    }
-                    else {
-                        document.addEventListener("mousemove", onMouseMove);
+                    if (document.pointerLockElement === null) {
+                        document.removeEventListener('mousemove', onMouseMove);
+                    } else {
+                        document.addEventListener('mousemove', onMouseMove);
                     }
                 }
-                canvas.addEventListener("click", onClick);
-                document.addEventListener("pointerlockchange", onPointerLockChange);
+
+                canvas.addEventListener('click', onClick);
+                document.addEventListener(
+                    'pointerlockchange',
+                    onPointerLockChange
+                );
+                
                 onPointerLockChange();
 
                 const touches = {};

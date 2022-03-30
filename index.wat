@@ -30,13 +30,15 @@
 (global $zero f32 (f32.const 0))
 (global $one f32 (f32.const 1))
 
+;; Mouse movement
+(global $movement-x (export "movementX") (mut f32) (f32.const 0))
+
 ;; The "time" of the ray-line collision along the wall in the range [0,1].
 (global $min-t2 (mut f32) (f32.const 0))
 
 ;; The address of the wall hit by the most recent raycast.
 (global $min-wall (mut i32) (i32.const 0))
 
-(global $movement-x (export "movementX") (mut f32) (f32.const 0))
 
 ;; Color: u32                           ABGR
 ;; Cell2: u8 * 2                        L/U cell, R/D cell
