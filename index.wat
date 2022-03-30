@@ -819,9 +819,8 @@
       (if (i32.lt_s (local.get $y) (local.get $ihalf-height))
         (then
 
-          ;; Draw wall.
-          ;; Start at the center of the texture and move up for $top-v and
-          ;; down for $bot-v.
+          ;; Draw wall. Start at the center of the texture and move up for
+          ;; $top-v and down for $bot-v.
           (local.set $top-v
             (f32.sub
               (global.get $one-half)
@@ -831,8 +830,7 @@
             (f32.add (global.get $one-half) (local.get $ydv))))
         (else
 
-          ;; Drawing ceiling / floor
-          ;; Find UV using distance table
+          ;; Drawing ceiling / floor. Find UV using distance table.
           (local.set $u
             (f32.add
               (global.get $Px)
@@ -872,7 +870,7 @@
           (local.tee $y (i32.add (local.get $y) (i32.const 1)))
           (i32.const 120))))
 
-    ;; loop on x
+    ;; Loop on x.
     (br_if $x-loop
       (i32.lt_s
         (local.tee $x (i32.add (local.get $x) (i32.const 1)))
