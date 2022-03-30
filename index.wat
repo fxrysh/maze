@@ -36,6 +36,8 @@
 ;; The address of the wall hit by the most recent raycast.
 (global $min-wall (mut i32) (i32.const 0))
 
+(global $movement-x (export "movementX") (mut f32) (f32.const 0))
+
 ;; Color: u32                           ABGR
 ;; Cell2: u8 * 2                        L/U cell, R/D cell
 ;; Wall:  s8 * 4, u8 * 4                (x0, y0), (dx, dy), scale / texture / palette / dummy
@@ -619,6 +621,7 @@
         (global.set $max-wall-addr (i32.const 0x11a4))
         (global.set $mode (i32.const 3)) ;; Game
         (call $timer (i32.const 1)) ;; Start timer
+        (global.set $movement-x (global.get $zero)) ;; reset any accumulated rotation
         (br $done))
 
       ;; MODE: $game
@@ -627,6 +630,13 @@
         (f32.add
           (global.get $angle)
           (call $move (i32.const 0x0000) (i32.const 0x0004))))
+
+      (global.set $angle
+        (f32.add
+          (global.get $angle)
+          (f32.mul (global.get $movement-x) (f32.const -0.005))))
+
+      (global.set $movement-x (global.get $zero))
 
       ;; angle = fmod(angle, 2 * pi)
       (global.set $angle
