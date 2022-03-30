@@ -113,6 +113,33 @@
                 document.addEventListener('keydown', onkey.bind(null, 1), false);
                 document.addEventListener('keyup', onkey.bind(null, 0), false);
 
+                function onClick() {
+                    if(document.pointerLockElement) {
+                        document.exitPointerLock();
+                    }
+                    else {
+                        (canvas.requestPointerLock
+                        || canvas.mozRequestPointerLock
+                        || canvas.webkitRequestPointerLock).call(canvas);
+                    }
+                }
+
+                function onMouseMove(event) {
+                    instance.exports.movementX.value += event.movementX;
+                }
+
+                function onPointerLockChange() {
+                    if(document.pointerLockElement === null) {
+                        document.removeEventListener("mousemove", onMouseMove);
+                    }
+                    else {
+                        document.addEventListener("mousemove", onMouseMove);
+                    }
+                }
+                canvas.addEventListener("click", onClick);
+                document.addEventListener("pointerlockchange", onPointerLockChange);
+                onPointerLockChange();
+
                 const touches = {};
                 function onTouch(down, event) {
                     for (let touch of event.changedTouches) {
