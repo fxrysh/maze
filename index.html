@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Maze</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <style>
+        html,
+        body {
+            background-color: #555;
+            flex-direction: column;
+            position: absolute;
+            display: flex;
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            font-family: 'Press Start 2P', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+                'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Fira Sans',
+                'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        #main {
+            object-fit: contain;
+            height: 100%;
+            width: 100%;
+        }
+
+        #timer {
+            text-shadow: 1px 1px 2px black;
+            background-color: #0000009c;
+            font-size: xx-large;
+            position: absolute;
+            width: fit-content;
+            color: white;
+            padding: 8px;
+            margin: 8px;
+            right: 0;
+            top: 0;
+        }
+    </style>
+    <script defer>
+        let timerRunning = false;
+        let startTime = 0;
+        let bestTime = Infinity;
+        const now = () => +new Date();
+        const env = {
+            t: (start) => {
+                if (start) {
+                    startTime = now();
+                } else {
+                    let elapsed = now() - startTime;
+                    if (elapsed < bestTime) {
+                        bestTime = elapsed;
+                    }
+
+                    // Reuse `startTime` as the final time in the display.
+                    startTime = elapsed;
+                }
+
+                timerRunning = start;
+            }
+        };
+
+        setInterval(() => {
+            // prettier-ignore
+            const toSec = (x) => (x == Infinity ? '0.0' : (x / 1000).toFixed(2));
+            const timer = document.getElementById('timer');
+            const elapsed = timerRunning ? now() - startTime : startTime;
+            timer.textContent = `${toSec(elapsed)} / ${toSec(bestTime)}`;
+        }, 100);
+
+        fetch('index.wasm')
+            .then((response) => response.arrayBuffer())
+            .then((bytes) => WebAssembly.instantiate(bytes, { Math, env }))
+            .then((source) => {
+                const instance = source.instance;
+                const canvasData = new Uint8Array(
+                    instance.exports.mem.buffer,
+                    0x3000,
+                    307200
+                );
+
+                const canvas = document.getElementById('main');
+                const context = canvas.getContext('2d');
+                const imageData = context.createImageData(320, 240);
+                const u8 = new Uint8Array(instance.exports.mem.buffer, 0, 4);
+                function onkey(down, event) {
+                    switch (event.code) {
+                        case 'KeyA': {
+                            u8[0] = down;
+                            break;
+                        }
+
+                        case 'KeyD': {
+                            u8[1] = down;
+                            break;
+                        }
+
+                        case 'KeyW': {
+                            u8[2] = down;
+                            break;
+                        }
+
+                        case 'KeyS': {
+                            u8[3] = down;
+                            break;
+                        }
+                    }
+                }
+
+                // prettier-ignore
+                document.addEventListener('keydown', onkey.bind(null, 1), false);
+                document.addEventListener('keyup', onkey.bind(null, 0), false);
+
+                const touches = {};
+                function onTouch(down, event) {
+                    for (let touch of event.changedTouches) {
+                        if (down) {
+                            // prettier-ignore
+                            index = touch.clientX < event.target.clientWidth * 0.5
+                                ? 0 // L
+                                : 1 // R
+
+                            u8[index] = 1;
+                            touches[touch.identifier] = index;
+                        } else {
+                            u8[touches[touch.identifier]] = 0;
+                            delete touches[touch.identifier];
+                        }
+                    }
+
+                    // Move forward when touching L and R side of screen.
+                    u8[2] = u8[0] & u8[1];
+                    event.preventDefault();
+                }
+
+                canvas.addEventListener(
+                    'touchstart',
+                    onTouch.bind(null, 1),
+                    false
+                );
+
+                canvas.addEventListener(
+                    'touchend',
+                    onTouch.bind(null, 0),
+                    false
+                );
+
+                (function update() {
+                    requestAnimationFrame(update);
+                    instance.exports.run();
+                    imageData.data.set(canvasData);
+                    context.putImageData(imageData, 0, 0);
+                })();
+            });
+    </script>
+</head>
+<body>
+    <span id="timer">0.0 / 0.0</span>
+    <canvas id="main" width="320" height="240"></canvas>
+</body>
