@@ -44,9 +44,10 @@
         }
     </style>
     <script defer>
+        let bestTime = Number(localStorage.getItem('score') || Infinity);
         let timerRunning = false;
         let startTime = 0;
-        let bestTime = Infinity;
+
         const now = () => +new Date();
         const env = {
             t: (start) => {
@@ -67,11 +68,15 @@
         };
 
         setInterval(() => {
-            // prettier-ignore
-            const toSec = (x) => (x == Infinity ? '0.0' : (x / 1000).toFixed(2));
-            const timer = document.getElementById('timer');
+            function toSec(x) {
+                return x == Infinity ? '0.0' : (x / 1000).toFixed(2);
+            }
+
             const elapsed = timerRunning ? now() - startTime : startTime;
+            const timer = document.getElementById('timer');
+
             timer.textContent = `${toSec(elapsed)} / ${toSec(bestTime)}`;
+            localStorage.setItem('score', bestTime);
         }, 100);
 
         fetch('index.wasm')
@@ -146,7 +151,7 @@
                     'pointerlockchange',
                     onPointerLockChange
                 );
-                
+
                 onPointerLockChange();
 
                 const touches = {};
