@@ -79,7 +79,7 @@
             localStorage.setItem('score', bestTime);
         }, 100);
 
-        fetch('index.wasm')
+        fetch('./index.wasm')
             .then((response) => response.arrayBuffer())
             .then((bytes) => WebAssembly.instantiate(bytes, { Math, env }))
             .then((source) => {
